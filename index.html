@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+<title>Day Dream – a private place to write what you feel</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #eef7ee;
+    --card: #ffffff;
+    --ink: #22332a;
+    --muted: #55695d;
+    --accent: #3b8f5a;
+    --accent-ink: #ffffff;
+    --line: #cfe3d3;
+    --note-bg: #fff3d6;
+    --note-ink: #5a3d00;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #ffffff 0%, #f3faf3 35%, #e3f3e5 100%) fixed;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.6;
+    padding: env(safe-area-inset-top, 0px) 16px env(safe-area-inset-bottom, 0px);
+  }
+  main { max-width: 620px; margin: 0 auto; padding: 32px 0 48px; }
+  .mark { font-family: 'Great Vibes', 'Snell Roundhand', 'Apple Chancery', 'Segoe Script', 'Brush Script MT', cursive; font-size: 2.1rem; line-height: 1.1; font-weight: 400; color: var(--accent); margin: 0 0 6px; }
+  .about { color: var(--ink); font-size: 1.08rem; margin: 0 0 26px; padding-left: 14px; border-left: 3px solid var(--accent); }
+  .about .truth { font-family: system-ui, sans-serif; font-size: .92rem; margin-top: 10px; }
+  footer.mark { text-align: center; margin: 28px 0 0; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 12px; font-weight: 700; }
+  h2 { font-size: 1.25rem; margin: 0 0 6px; }
+  .intro { color: var(--muted); font-size: 1.05rem; margin: 0 0 24px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 22px 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 20px rgba(59,143,90,.10);
+  }
+  label, .label { display: block; font-weight: 700; margin: 0 0 8px; }
+  .small { font-family: system-ui, sans-serif; font-size: .92rem; color: var(--muted); margin: 0 0 12px; }
+  textarea, input[type="text"] {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  textarea { min-height: 200px; resize: vertical; }
+  input[type="text"] { text-transform: uppercase; letter-spacing: .08em; }
+  textarea:focus, input:focus, button:focus-visible, summary:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .field { margin-bottom: 18px; }
+  button {
+    width: 100%;
+    font: inherit;
+    font-weight: 700;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: 0;
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+  }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); margin-top: 10px; }
+  button:disabled { opacity: .55; cursor: default; }
+  .choices { display: flex; flex-direction: column; gap: 8px; font-family: system-ui, sans-serif; }
+  .choices label { font-weight: 400; display: flex; gap: 10px; align-items: center; margin: 0;
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .choices input { width: 20px; height: 20px; accent-color: var(--accent); }
+  .hp { position: absolute; left: -9999px; width: 0; height: 0; overflow: hidden; }
+  .view { display: none; }
+  .view.on { display: block; }
+  .code {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 1.6rem; letter-spacing: .12em; text-align: center;
+    background: #f3faf3; border: 1px dashed var(--accent); border-radius: 12px;
+    padding: 14px; margin: 14px 0; user-select: all;
+  }
+  .error { display: none; font-family: system-ui, sans-serif; color: #8a1f1f; background: #fde8e8;
+    border-radius: 10px; padding: 10px 12px; margin-top: 12px; font-size: .95rem; }
+  .note {
+    font-family: system-ui, sans-serif;
+    font-size: .95rem;
+    background: var(--note-bg);
+    color: var(--note-ink);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .note strong { display: block; margin-bottom: 4px; }
+  .note a { color: inherit; font-weight: 700; text-decoration: underline; }
+  .fade { animation: fade .6s ease both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="mark">Blu</p>
+  <h1>Day Dream</h1>
+  <p class="intro">
+    For you, who has so much to say but no one to listen, you’re safe here.
+  </p>
+
+  <div class="about">
+    <p style="margin:0">Talking about the way you feel doesn’t always help, sometimes it just makes you feel vulnerable and worse because you feel like the people who you shared your fears and struggles with will use it against you, sometimes they do. This is for you, to write out how you feel into a note and throw it away deep into the ocean, I hope this helps you even just a tiny bit, you are safe here.</p>
+    <p class="truth">I’ve been in your shoes, or rather I still wear them, I know how hard it is to trust someone much less an invisible man or woman, I promise, your secret is safe with me.</p>
+  </div>
+
+
+  <!-- ========== WRITE A NOTE ========== -->
+  <div class="card" id="writeCard">
+    <div id="writeView" class="view on">
+      <label for="note">What is on your heart?</label>
+      <textarea id="note" maxlength="5000" autocomplete="off"
+        placeholder="Write anything. You don’t need to give your name."></textarea>
+      <p class="small" style="margin-top:12px">
+        Only the creator of this site reads what you send. It is never shown to other
+        visitors and never told to anyone. You don’t have to give a name or email, and
+        I don’t know who you are.
+      </p>
+      <div class="hp" aria-hidden="true"><input id="hp1" type="text" tabindex="-1" autocomplete="off" name="website"></div>
+      <button id="sendNote" type="button">Send it</button>
+      <div class="error" id="noteError" role="alert"></div>
+    </div>
+
+    <div id="sentView" class="view">
+      <h2>Thank you for trusting me</h2>
+      <p class="small">Your note has been sent. Here is your private return code:</p>
+      <div class="code" id="codeBox"></div>
+      <p class="small">
+        Save it somewhere safe, like a screenshot. If you come back later to tell me how
+        you are doing, type this code. It lets me connect your words without ever knowing your
+        name. Nothing else saves it for you.
+      </p>
+      <button id="copyCode" type="button">Copy code</button>
+      <button id="writeAgain" type="button" class="ghost">Write another note</button>
+    </div>
+  </div>
+
+  <!-- ========== COME BACK LATER ========== -->
+  <div class="card" id="returnCard">
+    <div id="returnView" class="view on">
+      <h2>Been here before?</h2>
+      <p class="small">Come back any time to tell me how it went, and whether this place helped you. This is also private and anonymous.</p>
+      <details>
+        <summary style="cursor:pointer;font-weight:700;margin-bottom:14px">Tell me how it went</summary>
+
+        <div class="field">
+          <label for="code">Your return code (optional)</label>
+          <input id="code" type="text" maxlength="12" autocomplete="off" placeholder="DD-XXXXXX">
+        </div>
+
+        <div class="field">
+          <span class="label">Did writing here help you feel better?</span>
+          <div class="choices">
+            <label><input type="radio" name="helped" value="Yes, it helped"> Yes, it helped</label>
+            <label><input type="radio" name="helped" value="A little"> A little</label>
+            <label><input type="radio" name="helped" value="Not really"> Not really</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="story">Tell me more (optional)</label>
+          <textarea id="story" maxlength="5000" style="min-height:140px" autocomplete="off"
+            placeholder="How have you been? What helped or didn’t? Please don’t write your name."></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true"><input id="hp2" type="text" tabindex="-1" autocomplete="off" name="homepage"></div>
+        <button id="sendReturn" type="button">Send</button>
+        <div class="error" id="returnError" role="alert"></div>
+      </details>
+    </div>
+
+    <div id="returnDone" class="view">
+      <h2>Thank you</h2>
+      <p class="small">I’m glad you came back. What you shared is private and stays with me.</p>
+      <button id="returnAgain" type="button" class="ghost">Send another update</button>
+    </div>
+  </div>
+
+  <div class="note" role="note">
+    <strong>If you are in danger or thinking about ending your life</strong>
+    I read messages when I can, not right away, so I cannot help in an emergency.
+    Please call your local emergency number, tell someone you trust who is near you,
+    or call:
+    <br><br>
+    Suicide Research and Prevention Initiative:<br>
+    <a href="tel:+2349080217555">09080217555</a> or
+    <a href="tel:+2349034400009">09034400009</a>
+  </div>
+
+  <footer class="mark">Blu</footer>
+</main>
+
+<script>
+  // STEP: replace YOUR_FORM_ID with your Formspree form ID.
+  var FORM_URL = 'https://formspree.io/f/mvkkkdar';
+
+  function $(id) { return document.getElementById(id); }
+  function show(el) { el.classList.add('on', 'fade'); }
+  function hide(el) { el.classList.remove('on', 'fade'); }
+
+  function makeCode() {
+    // Easy-to-read letters and numbers (no 0/O or 1/I)
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var bytes = new Uint8Array(6);
+    crypto.getRandomValues(bytes);
+    var out = '';
+    for (var i = 0; i < 6; i++) out += chars[bytes[i] % chars.length];
+    return 'DD-' + out;
+  }
+
+  function send(data) {
+    return fetch(FORM_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function (r) { if (!r.ok) throw new Error('failed'); });
+  }
+
+  // Gentle protection against spam and misuse (never blocks anyone for crude or sad words)
+  var sentTimes = [], lastText = '';
+  function screen(text, needLong) {
+    var now = Date.now();
+    sentTimes = sentTimes.filter(function (t) { return now - t < 3600000; });
+    if (sentTimes.length && now - sentTimes[sentTimes.length - 1] < 60000) return 'Please wait a minute before sending again.';
+    if (sentTimes.length >= 5) return 'You have sent several messages. Please come back a little later.';
+    if (/https?:|www\.|\.com\b/i.test(text)) return 'Please remove links from your message.';
+    if (text && text === lastText) return 'This looks the same as your last message.';
+    if (needLong && (text.length < 20 || text.split(/\s+/).length < 4 ||
+        new Set(text.toLowerCase().replace(/\s/g, '')).size < 5)) {
+      return 'Please write a little more, so I can understand how you feel.';
+    }
+    return '';
+  }
+  function record(text) { sentTimes.push(Date.now()); lastText = text; }
+
+  var FAIL = 'Sorry, that did not send. Your words are still here. Please check your internet and try again.';
+
+  // ----- Send a note -----
+  $('sendNote').addEventListener('click', function () {
+    var text = $('note').value.trim();
+    var err = $('noteError');
+    err.style.display = 'none';
+    if (!text) { $('note').focus(); return; }
+    if ($('hp1').value) {            // a bot filled the hidden box: pretend success, send nothing
+      $('note').value = ''; $('codeBox').textContent = makeCode();
+      hide($('writeView')); show($('sentView')); return;
+    }
+    var problem = screen(text, true);
+    if (problem) { err.textContent = problem; err.style.display = 'block'; return; }
+    var btn = this, code = makeCode();
+    btn.disabled = true; btn.textContent = 'Sending…';
+    send({ type: 'note', code: code, message: text, _subject: 'Day Dream note ' + code })
+      .then(function () {
+        record(text);
+        $('note').value = '';
+        $('codeBox').textContent = code;
+        hide($('writeView')); show($('sentView'));
+      })
+      .catch(function () { err.textContent = FAIL; err.style.display = 'block'; })
+      .then(function () { btn.disabled = false; btn.textContent = 'Send it'; });
+  });
+
+  $('copyCode').addEventListener('click', function () {
+    var code = $('codeBox').textContent, btn = this;
+    function done() { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy code'; }, 1800); }
+    if (navigator.clipboard) navigator.clipboard.writeText(code).then(done, function () {});
+  });
+
+  $('writeAgain').addEventListener('click', function () {
+    $('codeBox').textContent = '';
+    hide($('sentView')); show($('writeView')); $('note').focus();
+  });
+
+  // ----- Come back later -----
+  $('sendReturn').addEventListener('click', function () {
+    var err = $('returnError');
+    err.style.display = 'none';
+    var code = $('code').value.trim().toUpperCase();
+    var picked = document.querySelector('input[name="helped"]:checked');
+    var story = $('story').value.trim();
+    if (!picked && !story) { err.textContent = 'Please choose an answer or write a few words.'; err.style.display = 'block'; return; }
+    if ($('hp2').value) {
+      $('code').value = ''; $('story').value = '';
+      hide($('returnView')); show($('returnDone')); return;
+    }
+    var problem = screen(story, false);
+    if (problem) { err.textContent = problem; err.style.display = 'block'; return; }
+    var btn = this;
+    btn.disabled = true; btn.textContent = 'Sending…';
+    send({
+      type: 'follow-up',
+      code: code || 'none',
+      helped: picked ? picked.value : 'not answered',
+      message: story,
+      _subject: 'Day Dream follow-up ' + (code || '(no code)')
+    })
+      .then(function () {
+        record(story || picked.value);
+        $('code').value = ''; $('story').value = '';
+        if (picked) picked.checked = false;
+        hide($('returnView')); show($('returnDone'));
+      })
+      .catch(function () { err.textContent = FAIL; err.style.display = 'block'; })
+      .then(function () { btn.disabled = false; btn.textContent = 'Send'; });
+  });
+
+  $('returnAgain').addEventListener('click', function () {
+    hide($('returnDone')); show($('returnView'));
+  });
+</script>
+</body>
+</html>
